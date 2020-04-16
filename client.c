@@ -13,6 +13,7 @@ int main( int argc, char **argv ){
 	char port_name[MPI_MAX_PORT_NAME];
 	char text[SIZE_RESULT];
 	char result[SIZE_RESULT];
+	double t1, t2;
 
 	if (argc < 2) {
 		fprintf(stderr, "server port name required.\n");
@@ -28,11 +29,13 @@ int main( int argc, char **argv ){
 		scanf("%[^\n]%*c", text);
 
 		// Client sends here
+		t1 = MPI_Wtime();
 		MPI_Send(&text, strlen(text) + 1, MPI_CHAR, 0, TAG_CLIENT_MESSAGE, server);
 
 		// Client receives here
 		MPI_Recv(&result, SIZE_RESULT, MPI_CHAR, MPI_ANY_SOURCE, TAG_SERVER_RESULT, server, MPI_STATUS_IGNORE);
-		printf("Server sent: \n%s\n", result);
+		t2 = MPI_Wtime();
+		printf("(%2.8fms) \n%s\n", t2 - t1, result);
 	}
 
 	MPI_Comm_disconnect(&server);
